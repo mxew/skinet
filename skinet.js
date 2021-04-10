@@ -45,6 +45,7 @@ firebase.initializeApp(configs);
 jqbx.events.on("newSong", function(message) {
   bot.song = message;
   console.log(moment(Date.now()).format("HH:mm") + " " + message.username + " is playing " + message.artists[0].name + " - " + message.name);
+  // VERY IMPORTANT HORN INTRO TRACKING:
   if (message.artists[0].name == "Modest Mouse" && message.name == "Horn Intro") {
     bot.hornchain++;
     var hornstring = "";
@@ -101,23 +102,23 @@ jqbx.events.on("newChat", function(message) {
     var command = matches[1].toLowerCase();
     var args = matches[2];
 
-    if (bot.phrases[command]) {
-      jqbx.sendChat(bot.phrases[command]);
-    } else {
-      var thecommand = bot.commands.filter(function(cmd) {
-        var found = false;
-        for (i = 0; i < cmd.names.length; i++) {
-          if (!found) {
-            found = (cmd.names[i] == command.toLowerCase());
-          }
+    var thecommand = bot.commands.filter(function(cmd) {
+      var found = false;
+      for (i = 0; i < cmd.names.length; i++) {
+        if (!found) {
+          found = (cmd.names[i] == command.toLowerCase());
         }
-        return found;
-      })[0];
-
-      if (thecommand) {
-        //run command
-        thecommand.handler(commandData, args);
       }
+      return found;
+    })[0];
+
+    if (thecommand) {
+      // run command
+      thecommand.handler(commandData, args);
+    } else if (bot.phrases[command]) {
+      // if not a command, check string triggers
+      // TODO: move this to a firebase database so we can make/delete these on the fly
+      jqbx.sendChat(bot.phrases[command]);
     }
 
   }
