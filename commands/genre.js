@@ -11,7 +11,7 @@ exports.handler = function(data, args) {
       .request('https://api.spotify.com/v1/artists/' + artistid)
       .then(function(artist) {
         if (artist) {
-          if (artist.genres){
+          if (artist.genres.length){
             jqbx.sendChat(bot.song.artists[0].name + " is classified by Spotify as: " + artist.genres.join(", "));
           } else {
             jqbx.sendChat("spotify hasn't decided what this is yet.");
