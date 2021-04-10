@@ -8,7 +8,6 @@ exports.handler = function(data, args) {
       trackid = args.trim();
     }
     jqbx.getFirst(trackid, function(formatted) {
-      console.log(formatted);
       if (formatted) {
         var prsn = formatted.track.username;
         if (!formatted.track.username) prsn = formatted.track.userUri.replace("spotify:user:", "");

@@ -40,7 +40,6 @@ exports.handler = function(data, args) {
       //If call returned correctly, continue
       if (!error && response.statusCode == 200) {
         var formatted = JSON.parse(body);
-        console.log(formatted);
 
         if (formatted.results[0].locations[0].adminArea5 != "") {
           var locationStr = formatted.results[0].locations[0].adminArea5 + " " + formatted.results[0].locations[0].adminArea3 + " (" + formatted.results[0].locations[0].adminArea1 + ")";
@@ -52,7 +51,6 @@ exports.handler = function(data, args) {
             //If call returned correctly, continue
             if (!error2 && response2.statusCode == 200) {
               var wdata = JSON.parse(body2);
-              console.log(wdata.current.weather[0]);
               if (wdata) {
                 var ukMix = false;
                 var timeFormat = "HH:mm";
@@ -72,7 +70,6 @@ exports.handler = function(data, args) {
                 };
                 if (twelvehour[formatted.results[0].locations[0].adminArea1]) timeFormat = "h:mm A";
                 if (formatted.results[0].locations[0].adminArea1 == "GB") ukMix = true;
-                console.log(ukMix + " " + ukMix);
                 var tempBoy = "°C";
                 if (units == "imperial") tempBoy = "°F";
                 var windBoy = "km/h"
@@ -211,7 +208,6 @@ exports.handler = function(data, args) {
                 ctx.fillText(Math.round(wdata.daily[2].temp.max) + ' ' + tempBoy, 360, 166);
                 ctx.fillText(Math.round(wdata.daily[2].temp.min) + ' ' + tempBoy, 360, 185);
 
-
                 // ICONS ICONS ICONS
                 var picboy = new Image();
                 picboy.onload = function() {
@@ -235,7 +231,6 @@ exports.handler = function(data, args) {
                         }
                         imgur.uploadBase64(img)
                           .then(function(json) {
-                            console.log(json.data.link);
                             jqbx.sendChat(json.data.link);
                           })
                           .catch(function(err) {

@@ -16,8 +16,6 @@ exports.handler = function(data, args) {
                     jqbx.sendChat("i know of this artist, but they don't have a bio on last.fm yet.");
                   } else {
                     var thingtosay = striptags(formatted.artist.bio.content);
-                    console.log(thingtosay);
-
                     jqbx.sendChat(thingtosay, true);
                   }
                   if (formatted.artist.similar) {

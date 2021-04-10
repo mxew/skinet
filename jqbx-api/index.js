@@ -125,9 +125,8 @@ function getUser(uri, callback){
 };
 
 ws.addEventListener('open', () => {
-  console.log("socket connection open");
   connected = true;
-  if (user && !connected){
+  if (user && !started){
     jqbx.joinRoom(roomid, user);
   }
   setInterval(function() {
