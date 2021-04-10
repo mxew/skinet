@@ -45,7 +45,7 @@ function sendChat(txt, expandable) {
       ws.send("42[\"chat\"," + JSON.stringify(chatBody) + "]");
     } else {
       var chatBody = {
-        roomId: "5909cdd47f0129009e1a4ad8",
+        roomId: roomid,
         user: user,
         message: {
           message: txt,
@@ -69,7 +69,7 @@ function sendChat(txt, expandable) {
 function sendMessage(txt) {
   try {
     var chatBody = {
-      roomId: "5909cdd47f0129009e1a4ad8",
+      roomId: roomid,
       user: user,
       message: {
         message: txt,
