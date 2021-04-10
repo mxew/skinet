@@ -10,6 +10,8 @@ const events = new EventEmitter();
 
 var user = null;
 var roomid = null;
+var connected = false;
+var started = false;
 
 function joinRoom(theroomid, theuser) {
   var joinBody = {
@@ -18,7 +20,10 @@ function joinRoom(theroomid, theuser) {
   };
   user = theuser;
   roomid = theroomid;
-  ws.send("42[\"join\"," + JSON.stringify(joinBody) + "]");
+  if (connected){
+    started = true;
+    ws.send("42[\"join\"," + JSON.stringify(joinBody) + "]");
+  }
 };
 
 function sendChat(txt, expandable) {
@@ -121,10 +126,13 @@ function getUser(uri, callback){
 
 ws.addEventListener('open', () => {
   console.log("socket connection open");
+  connected = true;
+  if (user && !connected){
+    jqbx.joinRoom(roomid, user);
+  }
   setInterval(function() {
     ws.send('2');
   }, 12 * 1000);
-  events.emit("ready", true);
 });
 
 ws.addEventListener('message', (data0) => {
