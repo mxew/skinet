@@ -52,7 +52,14 @@ exports.handler = function(data, args) {
         song.tempo = Math.floor(song.tempo);
         song.energy = Math.floor(song.energy * 100);
         song.danceability = Math.floor(song.danceability * 100);
-        jqbx.sendChat("Key: " + song.key + " " + song.mode + " | Time Sig: " + song.timesig + " | Tempo: " + song.tempo + " | Energy: " + song.energy + "% | Danceability: " + song.danceability + "% | Loudness: " + song.loudness);
+        song.valence = Math.floor(song.valence * 100);
+        jqbx.sendChat("Key: " + song.key + " " + song.mode +
+                      " | Time Sig: " + song.timesig +
+                      " | Tempo: " + song.tempo +
+                      " | Energy: " + song.energy +
+                      "% | Danceability: " + song.danceability +
+                      "% | Valence: " + song.valence +
+                      "% | Loudness: " + song.loudness);
       })
       .catch(function(err) {
         jqbx.sendChat("there's some sort of problem thanks.")
