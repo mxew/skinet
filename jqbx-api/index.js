@@ -13,6 +13,10 @@ var roomid = null;
 var connected = false;
 var started = false;
 
+/*
+JOIN FUNCTIONS
+*/
+
 function joinRoom(theroomid, theuser) {
   var joinBody = {
     roomId: theroomid,
@@ -25,6 +29,10 @@ function joinRoom(theroomid, theuser) {
     ws.send("42[\"join\"," + JSON.stringify(joinBody) + "]");
   }
 };
+
+/*
+CHAT FUNCTIONS
+*/
 
 function sendChat(txt, expandable) {
   try {
@@ -87,6 +95,50 @@ function sendMessage(txt) {
   }
 };
 
+/*
+VOTE FUNCTIONS
+*/
+
+function upvote() {
+  try {
+    var votebody = {
+      roomId: roomid,
+      user: user
+    };
+    ws.send("42[\"thumbsUp\"," + JSON.stringify(votebody) + "]");
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+function downvote() {
+  try {
+    var votebody = {
+      roomId: roomid,
+      user: user
+    };
+    ws.send("42[\"thumbsDown\"," + JSON.stringify(votebody) + "]");
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+function star() {
+  try {
+    var votebody = {
+      roomId: roomid,
+      user: user
+    };
+    ws.send("42[\"starTrack\"," + JSON.stringify(votebody) + "]");
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+/*
+DATA LOOKUP FUNCTIONS
+*/
+
 function getFirst(trackid, callback){
   request('https://jqbx.fm/tracks/first/' + trackid, function cbfunc(error, response, body) {
     //If call returned correctly, continue
@@ -123,6 +175,10 @@ function getUser(uri, callback){
     }
   });
 };
+
+/*
+REALTIME EVENT EMITTER
+*/
 
 ws.addEventListener('open', () => {
   connected = true;
@@ -180,11 +236,17 @@ ws.addEventListener('message', (data0) => {
 
 });
 
+/*
+EXPORTS
+*/
 
 module.exports = {
   joinRoom,
   sendMessage,
   sendChat,
+  upvote,
+  downvote,
+  star,
   getFirst,
   getUser,
   events
