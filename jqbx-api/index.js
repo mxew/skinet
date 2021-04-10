@@ -13,6 +13,10 @@ var roomid = null;
 var connected = false;
 var started = false;
 
+var users = [];
+var admins = [];
+var mods = [];
+
 /*
 JOIN FUNCTIONS
 */
@@ -176,6 +180,13 @@ function getUser(uri, callback){
   });
 };
 
+function getRole(uri){
+  var role = 0;
+  if (mods.includes(uri)) role = 1;
+  if (admins.includes(uri)) role = 2;
+  return role;
+};
+
 /*
 REALTIME EVENT EMITTER
 */
@@ -214,7 +225,14 @@ ws.addEventListener('message', (data0) => {
           }
           if (message.users) {
             //console.log(message.users);
+            users = message.users;
             events.emit("usersChanged", message.users);
+          }
+          if (message.mods){
+            mods = message.mods;
+          }
+          if (message.admin){
+            admins = message.admin;
           }
         } catch (e) {
           console.log(e);
@@ -249,5 +267,6 @@ module.exports = {
   star,
   getFirst,
   getUser,
+  getRole,
   events
 };
