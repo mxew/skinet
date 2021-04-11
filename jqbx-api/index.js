@@ -159,7 +159,7 @@ function downvote() {
     roomId: roomid,
     user: user
   };
-  emitToSocket("thumbsDown", votebody);
+  emitToSocket("thumbsDown", voteBody);
 };
 
 function star() {
@@ -200,7 +200,7 @@ BIND TO WS EVENTS
 ws.addEventListener('open', () => {
   connected = true;
   if (user && !started) {
-    jqbx.joinRoom(roomid, user);
+    joinRoom(roomid, user);
   }
   setInterval(function() {
     ws.send('2');

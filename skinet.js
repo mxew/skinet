@@ -52,10 +52,11 @@ jqbx.events.on("newSong", function(message) {
     for (var i = 0; i < bot.hornchain; i++) {
       hornstring += ":trumpet:";
     }
-    sendChat(hornstring);
+    jqbx.sendChat(hornstring);
   } else {
     if (bot.hornchain > 0) {
-      sendChat(":x: hey great work " + message.username + ". Chain was " + bot.hornchain);
+      jqbx.sendChat(":x: hey great work " + message.username + ". Chain was " + bot.hornchain);
+      jqbx.downvote();
     }
     bot.hornchain = 0;
   }
