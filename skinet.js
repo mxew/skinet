@@ -119,9 +119,9 @@ jqbx.events.on("usersChanged", function(users) {
 });
 
 jqbx.events.on("newVote", function(data) {
-  bot.lastActive[data.user.uri] = Date.now();
+  if (bot.song.userUri !== data.user.uri) bot.lastActive[data.user.uri] = Date.now();
   var skipCheck = jqbx.voteRatio(true);
-  if (skipCheck <= -0.25 && !bot.voted) {
+  if ((skipCheck <= -0.25 && !bot.voted) && (bot.users.length >= 5)) {
     jqbx.sendChat("https://media.giphy.com/media/3ohze1LSWrEGCML02Y/giphy.gif");
     jqbx.upvote();
     bot.voted = true;
