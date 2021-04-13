@@ -34,7 +34,8 @@ var votes = {
 
 function emitToSocket(type, data) {
   try {
-    ws.send("42[\"" + type + "\"," + JSON.stringify(data) + "]");
+    var message = "42[\"" + type + "\"," + JSON.stringify(data) + "]";
+    ws.send(message);
   } catch (e) {
     console.log(e);
   }
@@ -267,8 +268,8 @@ function stepDown(){
 function supplyTrack(trackObject){
   var body = {
     roomId: roomid,
-    track: trackObject,
-    user: user
+    user: user,
+    track: trackObject
   };
   emitToSocket("getNextTrack", body);
 };
@@ -277,7 +278,8 @@ function supplyTrack(trackObject){
 MOD FUNCTIONS
 */
 
-function removeDJ(djObj) {
+function removeDJ(uri) {
+  /*
   var kickBody = {
     roomId: roomid,
     user: user,
@@ -285,6 +287,12 @@ function removeDJ(djObj) {
   };
   console.log(kickBody);
   emitToSocket("kick", kickBody);
+  */
+  var body = {
+    roomId: roomid,
+    user: getUserObjFromUri(uri)
+  };
+  emitToSocket("leaveDjs", body);
 };
 
 /*

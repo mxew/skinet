@@ -98,7 +98,7 @@ module.exports = function() {
     djs: [],
     playlist: [],
     afkTimer: null,
-    afkLimit: 5,
+    afkLimit: 45,
     voted: false
   };
 };
