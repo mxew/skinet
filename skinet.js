@@ -27,6 +27,41 @@ try {
 
 bot.init = function() {
   jqbx.joinRoom(bot.roomid, bot.user);
+
+  // init afk check
+  /*
+  TODO: fix this
+  bot.afkTimer = setInterval(function() {
+    if (bot.afkLimit) afkCheck();
+  }, 1 * 60000);
+  */
+
+  // load bot's playlist
+  spotify
+    .request("https://api.spotify.com/v1/playlists/" + process.env.SPOTIFY_PLAYLIST)
+    .then(function(list) {
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+      }
+      if (list.tracks) {
+        if (list.tracks.items) {
+          if (list.tracks.items.length) {
+            var tracks = [];
+            for (let i = 0; i < list.tracks.items.length; i++) {
+              tracks.push(list.tracks.items[i].track);
+            }
+            shuffleArray(tracks);
+            bot.playlist = tracks;
+          }
+        }
+      }
+    })
+    .catch(function(err) {
+      console.log(err);
+    });
 };
 
 imgur.setClientId(process.env.IMGUR_ID);
@@ -44,6 +79,8 @@ firebase.initializeApp(configs);
 
 jqbx.events.on("newSong", function(message) {
   bot.song = message;
+  bot.voted = false;
+
   console.log(moment(Date.now()).format("HH:mm") + " " + message.username + " is playing " + message.artists[0].name + " - " + message.name);
   // VERY IMPORTANT HORN INTRO TRACKING:
   if (message.artists[0].name == "Modest Mouse" && message.name == "Horn Intro") {
@@ -70,6 +107,7 @@ jqbx.events.on("usersChanged", function(users) {
   var ppl = [];
   for (var i = 0; i < users.length; i++) {
     ppl.push(users[i]._id);
+    if (!bot.lastActive[users[i].uri]) bot.lastActive[users[i].uri] = Date.now();
     if (bot.users) {
       if (!bot.users.includes(users[i]._id) && users[i].device !== "bot") {
         // this person must be new
@@ -81,6 +119,46 @@ jqbx.events.on("usersChanged", function(users) {
   }
   // rewrite bot.users with new list
   bot.users = ppl;
+});
+
+jqbx.events.on("newVote", function(data) {
+  bot.lastActive[data.user.uri] = Date.now();
+  var skipCheck = jqbx.voteRatio(true);
+  if(skipCheck <= -0.25 && !bot.voted){
+    jqbx.sendChat("https://media.giphy.com/media/3ohze1LSWrEGCML02Y/giphy.gif");
+    jqbx.upvote();
+    bot.voted = true;
+  }
+});
+
+jqbx.events.on("djsChanged", function(data) {
+  bot.djs = data;
+});
+
+jqbx.events.on("newDJ", function(data) {
+  bot.lastActive[data.uri] = Date.now();
+});
+
+jqbx.events.on("trackRequested", function() {
+  // FEED JQBX A TRACK
+  var track = bot.playlist.shift();
+  var reducedTrack = {
+    id: track.id,
+    album: {
+      images: track.album.images,
+      name: track.album.name,
+      uri: track.album.uri
+    },
+    artists: track.artists,
+    duration_ms: 224724,
+    href: track.href,
+    name: track.name,
+    popularity: track.popularity,
+    uri: track.uri
+  };
+  console.log(reducedTrack)
+  jqbx.supplyTrack(reducedTrack);
+  bot.playlist.push(track);
 });
 
 jqbx.events.on("newChat", function(message) {
@@ -96,6 +174,7 @@ jqbx.events.on("newChat", function(message) {
     name: name,
     txt: txt
   };
+  bot.lastActive[uri] = Date.now();
   console.log(moment(Date.now()).format("HH:mm") + " " + name + ": " + txt);
 
   var matches = txt.match(/^(?:[/])(\w+)\s*(.*)/i);
@@ -124,5 +203,29 @@ jqbx.events.on("newChat", function(message) {
 
   }
 });
+
+function afkCheck() {
+  for (let i = 0; i < bot.djs.length; i++) {
+    if (bot.lastActive[bot.djs[i].uri]) {
+      var timeSince = Math.floor((Date.now() - bot.lastActive[bot.djs[i].uri]) / 1000 / 60);
+      console.log("AFK CHECK: " + bot.djs[i].uri + ": " + timeSince);
+      if (timeSince >= bot.afkLimit) {
+        if (bot.warned[bot.djs[i].uri]) {
+          jqbx.removeDJ(bot.djs[i]);
+          bot.warned[bot.djs[i].uri] = false;
+        } else {
+          // warn DJ
+          var nameToUse = bot.djs[i].id;
+          if (bot.djs[i].username) nameToUse = bot.djs[i].username;
+          jqbx.sendChat("@" + nameToUse + " you have been afk for " + timeSince + " minutes. Engage now or prepare to be destroyed.");
+          bot.warned[bot.djs[i].uri] = true;
+        }
+      }
+    } else {
+      console.log("AFK CHECK: new DJ detected: " + bot.djs[i].uri)
+      bot.lastActive[bot.djs[i].uri] = Date.now();
+    }
+  }
+};
 
 bot.init();

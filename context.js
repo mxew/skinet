@@ -24,8 +24,7 @@ module.exports = function() {
       image: process.env.JQBX_IMAGE,
       device: "bot",
       status: "active",
-      country: "US",
-      socketId: process.env.JQBX_SOCKETID
+      country: "US"
     },
     roomid: process.env.JQBX_ROOMID,
     song: null,
@@ -93,7 +92,13 @@ module.exports = function() {
       "47": "Do not go past the mark you aimed for — in victory, learn when to stop.",
       "48": "Assume formlessness."
     },
-    users: null
-
+    users: null,
+    lastActive: {},
+    warned: {},
+    djs: [],
+    playlist: [],
+    afkTimer: null,
+    afkLimit: 5,
+    voted: false
   };
 };
