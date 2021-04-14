@@ -160,7 +160,8 @@ function joinRoom(theroomid, theuser) {
     user: theuser
   };
   user = theuser;
-  if (!user.socketId && sid) user.socketId = sid;
+  // if (!user.socketId && sid) user.socketId = sid;
+
   roomid = theroomid;
   if (connected) {
     started = true;
@@ -353,8 +354,8 @@ ws.addEventListener('message', (data0) => {
     if (data0.data.charAt(0) == "0"){
       var startup = JSON.parse(data0.data.substring(1,data0.data.length));
       console.log("sid is set to "+startup.sid);
-      sid = startup.sid;
-      if (user) user.socketId = sid;
+      // sid = startup.sid;
+      // if (user) user.socketId = sid;
     }
     var data = data0.data;
     var code = data.substring(0, data.indexOf('['));

@@ -41,7 +41,6 @@ module.exports = function() {
       "secretcodeword": "http://bandsdirtiehates.online",
       "leaderboard": "https://thompsn.com/jqbx/leaderboard/?board=down",
       "help": "please download our rules pdf",
-      "want": "Get a bot for your own room by filling out the request form: https://thompsn.com/iwym.org/rules.pdf",
       "x": "JASON!",
       "1": "Never outshine the master",
       "2": "Never put too much trust in friends, learn how to use enemies",
@@ -98,7 +97,8 @@ module.exports = function() {
     djs: [],
     playlist: [],
     afkTimer: null,
-    afkLimit: 45,
-    voted: false
+    afkLimit: 24,
+    voted: false,
+    dbLoaded: false
   };
 };

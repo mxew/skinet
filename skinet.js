@@ -74,6 +74,40 @@ var configs = {
 
 firebase.initializeApp(configs);
 
+// INIT BOT DB
+var configs2 = {
+  apiKey: process.env.FIREBASE_KEY,
+  authDomain: process.env.FIREBASE_AUTH,
+  databaseURL: process.env.FIREBASE_DATABASE
+};
+
+firebase.initializeApp(configs2, "bot");
+
+firebase.app("bot").auth().signInWithEmailAndPassword(process.env.FB_DB_LOGIN, process.env.FB_DB_PASS).catch(function(error) {
+  console.log(error);
+});
+
+firebase.app("bot").auth().onAuthStateChanged(function(user) {
+  if (!bot.dbLoaded && user) {
+    var triggersInit = firebase.app("bot").database().ref("triggersInit");
+    triggersInit.once("value")
+      .then(function(snap) {
+        var data = snap.val();
+        if (!data) {
+          var now = Date.now();
+          triggersInit.set(now);
+          var triggers = firebase.app("bot").database().ref("triggers");
+          for (var key in bot.phrases) {
+            if (bot.phrases.hasOwnProperty(key)) {
+              triggers.child(key).set(bot.phrases[key])
+            }
+          }
+        }
+      });
+    bot.dbLoaded = Date.now();
+  }
+});
+
 jqbx.events.on("newSong", function(message) {
   bot.song = message;
   bot.voted = false;
@@ -193,10 +227,16 @@ jqbx.events.on("newChat", function(message) {
     if (thecommand) {
       // run command
       thecommand.handler(commandData, args);
-    } else if (bot.phrases[command]) {
-      // if not a command, check string triggers
-      // TODO: move this to a firebase database so we can make/delete these on the fly
-      jqbx.sendChat(bot.phrases[command]);
+    } else if (uri !== bot.user.uri){
+      // check db for single string triggers
+      var trigger = firebase.app("bot").database().ref("triggers/" + command);
+      trigger.once("value")
+        .then(function(snap) {
+          var data = snap.val();
+          if (data) {
+            jqbx.sendChat(data);
+          }
+        });
     }
 
   }
