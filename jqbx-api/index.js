@@ -354,6 +354,7 @@ ws.addEventListener('message', (data0) => {
     if (data0.data.charAt(0) == "0"){
       var startup = JSON.parse(data0.data.substring(1,data0.data.length));
       console.log("sid is set to "+startup.sid);
+      joinRoom(roomid, user);
       // sid = startup.sid;
       // if (user) user.socketId = sid;
     }
