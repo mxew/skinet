@@ -250,8 +250,12 @@ function afkCheck() {
         console.log("AFK CHECK: " + bot.djs[i].uri + ": " + timeSince);
         if (timeSince >= bot.afkLimit) {
           if (bot.warned[bot.djs[i].uri]) {
-            jqbx.removeDJ(bot.djs[i].uri);
-            bot.warned[bot.djs[i].uri] = false;
+            if (bot.song.userUri == bot.djs[i].uri){
+              // this person is current dj ... wait for now
+            } else {
+              jqbx.removeDJ(bot.djs[i].uri);
+              bot.warned[bot.djs[i].uri] = false;
+            }
           } else {
             // warn DJ
             var nameToUse = bot.djs[i].id;
