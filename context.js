@@ -92,6 +92,7 @@ module.exports = function() {
       "48": "Assume formlessness."
     },
     users: null,
+    regions: [],
     lastActive: {},
     warned: {},
     djs: [],

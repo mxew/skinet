@@ -136,8 +136,12 @@ jqbx.events.on("songUpdated", function(song) {
 
 jqbx.events.on("usersChanged", function(users) {
   var ppl = [];
+  var countries = [];
   for (var i = 0; i < users.length; i++) {
     ppl.push(users[i]._id);
+    if (!countries.includes(users[i].country)){
+      countries.push(users[i].country);
+    }
     if (!bot.lastActive[users[i].uri]) bot.lastActive[users[i].uri] = Date.now();
     if (bot.users) {
       if (!bot.users.includes(users[i]._id) && users[i].device !== "bot") {
@@ -150,6 +154,7 @@ jqbx.events.on("usersChanged", function(users) {
   }
   // rewrite bot.users with new list
   bot.users = ppl;
+  bot.regions = countries;
 });
 
 jqbx.events.on("newVote", function(data) {
