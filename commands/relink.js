@@ -14,7 +14,7 @@ exports.handler = function(data, args) {
         if (blocked.length){
           jqbx.sendChat(bot.song.name + " is not available in the following regions: " + blocked.join(", ") + ".");
         } else {
-          jqbx.sendChat(bot.song.name + " should in theory be playing for everyone here. ("+bot.regions.join(", ") + ").")
+          jqbx.sendChat(bot.song.name + " should in theory be playing for everyone here ("+bot.regions.join(", ") + ").")
         }
       })
       .catch(function(err) {
