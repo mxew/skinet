@@ -2,5 +2,5 @@
 
 exports.names = ['up'];
 exports.handler = function(data, args) {
-  // jqbx.stepUp();
+  jqbx.stepUp();
 };

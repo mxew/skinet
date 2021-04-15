@@ -34,7 +34,8 @@ var votes = {
 
 function emitToSocket(type, data) {
   try {
-    var message = "42[\"" + type + "\"," + JSON.stringify(data) + "]";
+    var message = "42["+JSON.stringify(type)+"," + JSON.stringify(data) + "]";
+    // console.log(message);
     ws.send(message);
   } catch (e) {
     console.log(e);
@@ -385,6 +386,7 @@ module.exports = {
   sendChat,
   upvote,
   downvote,
+  supplyTrack,
   star,
   stepUp,
   stepDown,

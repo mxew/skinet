@@ -34,8 +34,29 @@ bot.init = function() {
   }, 3 * 60000);
 
   // load bot's playlist
+  plLoad();
+};
+
+const reduceTrack = (track) => ({
+  id: track.id,
+  album: {
+    images: track.album.images,
+    name: track.album.name,
+    uri: track.album.uri,
+  },
+  artists: track.artists,
+  duration_ms: track.duration_ms,
+  startedAt: track.startedAt,
+  href: track.href,
+  name: track.name,
+  popularity: track.popularity,
+  uri: track.uri,
+});
+
+const plLoad = function(url){
+  if (!url) url = "https://api.spotify.com/v1/playlists/" + process.env.SPOTIFY_PLAYLIST + "/tracks?offset=0&limit=100&market=US"
   spotify
-    .request("https://api.spotify.com/v1/playlists/" + process.env.SPOTIFY_PLAYLIST)
+    .request(url)
     .then(function(list) {
       function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
@@ -43,18 +64,19 @@ bot.init = function() {
           [array[i], array[j]] = [array[j], array[i]];
         }
       }
-      if (list.tracks) {
-        if (list.tracks.items) {
-          if (list.tracks.items.length) {
+        if (list.items) {
+          if (list.items.length) {
             var tracks = [];
-            for (let i = 0; i < list.tracks.items.length; i++) {
-              tracks.push(list.tracks.items[i].track);
+            for (let i = 0; i < list.items.length; i++) {
+              tracks.push(list.items[i].track);
             }
+            tracks = tracks.map(reduceTrack);
             shuffleArray(tracks);
-            bot.playlist = tracks;
+            bot.playlist = bot.playlist.concat(tracks);
+            console.log(bot.playlist.length + "tracks loaded.");
           }
         }
-      }
+      if (list.next) plLoad(list.next);
     })
     .catch(function(err) {
       console.log(err);
@@ -178,23 +200,7 @@ jqbx.events.on("newDJ", function(data) {
 jqbx.events.on("trackRequested", function() {
   // FEED JQBX A TRACK
   var track = bot.playlist.shift();
-  var now = Date.now();
-  var reducedTrack = {
-    id: track.id,
-    album: {
-      images: track.album.images,
-      name: track.album.name,
-      uri: track.album.uri
-    },
-    artists: track.artists,
-    duration_ms: track.duration_ms,
-    href: track.href,
-    name: track.name,
-    popularity: track.popularity,
-    uri: track.uri
-  };
-  console.log(reducedTrack)
-  jqbx.supplyTrack(reducedTrack);
+  jqbx.supplyTrack(track);
   bot.playlist.push(track);
 });
 
