@@ -3,8 +3,15 @@
 exports.names = ['metrics'];
 exports.handler = function(data, args) {
   if (bot.song) {
+    var trackid = bot.song.id;
+    if (args) {
+      var match = args.match(/.*\/\/open.spotify\.com\/.*\/(.*?)(?=\?|$)/);
+      if (match){
+        trackid = match[1];
+      }
+    }
     spotify
-      .request('https://api.spotify.com/v1/audio-features/' + bot.song.id)
+      .request('https://api.spotify.com/v1/audio-features/' + trackid)
       .then(function(song) {
         if (song.key == 0) {
           song.key = "c"

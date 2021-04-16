@@ -5,7 +5,10 @@ exports.handler = function(data, args) {
   if (bot.song) {
     var trackid = bot.song.id;
     if (args) {
-      trackid = args.trim().replace("spotify:track:", "");
+      var match = args.match(/.*\/\/open.spotify\.com\/.*\/(.*?)(?=\?|$)/);
+      if (match){
+        trackid = match[1];
+      }
     }
     spotify
       .request('https://api.spotify.com/v1/tracks/' + trackid)

@@ -5,7 +5,10 @@ exports.handler = function(data, args) {
   if (bot.song) {
     var trackid = "spotify:track:" + bot.song.id;
     if (args) {
-      trackid = args.trim();
+      var match = args.match(/.*\/\/open.spotify\.com\/.*\/(.*?)(?=\?|$)/);
+      if (match){
+        trackid = "spotify:track:" + match[1];
+      }
     }
     jqbx.getFirst(trackid, function(formatted) {
       if (formatted) {

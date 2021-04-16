@@ -5,14 +5,18 @@ exports.handler = function(data, args) {
   if (bot.song) {
     var artistid = bot.song.artists[0].id;
     if (args) {
-      artistid = args.trim().replace("spotify:artist:", "");
+      var match = args.match(/.*\/\/open.spotify\.com\/.*\/(.*?)(?=\?|$)/);
+      if (match){
+        artistid = match[1];
+        console.log(artistid)
+      }
     }
     spotify
       .request('https://api.spotify.com/v1/artists/' + artistid)
       .then(function(artist) {
         if (artist) {
           if (artist.genres.length){
-            jqbx.sendChat(bot.song.artists[0].name + " is classified by Spotify as: " + artist.genres.join(", "));
+            jqbx.sendChat(artist.name + " is classified by Spotify as: " + artist.genres.join(", "));
           } else {
             jqbx.sendChat("spotify hasn't decided what this is yet.");
           }
