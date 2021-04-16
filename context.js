@@ -100,6 +100,7 @@ module.exports = function() {
     afkTimer: null,
     afkLimit: 24,
     voted: false,
+    coinIssued: true,
     dbLoaded: false
   };
 };

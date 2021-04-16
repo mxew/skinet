@@ -53,8 +53,10 @@ function handleMessage(type, message) {
       if (message.currentTrack) {
         events.emit("songUpdated", message.currentTrack);
         if (message.currentTrack.thumbsUpUris) {
+          var currentUpvotes = votes.upvotes;
+          votes.upvotes = message.currentTrack.thumbsUpUris;
           for (let i = 0; i < message.currentTrack.thumbsUpUris.length; i++) {
-            if (!votes.upvotes.includes(message.currentTrack.thumbsUpUris[i])) {
+            if (!currentUpvotes.includes(message.currentTrack.thumbsUpUris[i])) {
               events.emit("newVote", {
                 user: getUserObjFromUri(message.currentTrack.thumbsUpUris[i]),
                 type: "upvote",
@@ -62,11 +64,12 @@ function handleMessage(type, message) {
               });
             }
           }
-          votes.upvotes = message.currentTrack.thumbsUpUris;
         }
         if (message.currentTrack.thumbsDownUris) {
+          var currentDownvotes = votes.downvotes;
+          votes.downvotes = message.currentTrack.thumbsDownUris;
           for (let i = 0; i < message.currentTrack.thumbsUpUris.length; i++) {
-            if (!votes.downvotes.includes(message.currentTrack.thumbsUpUris[i])) {
+            if (!currentDownvotes.includes(message.currentTrack.thumbsUpUris[i])) {
               events.emit("newVote", {
                 user: getUserObjFromUri(message.currentTrack.thumbsDownUris[i]),
                 type: "downvote",
@@ -74,11 +77,12 @@ function handleMessage(type, message) {
               });
             }
           }
-          votes.downvotes = message.currentTrack.thumbsDownUris;
         }
         if (message.currentTrack.starUris) {
+          var currentStars = votes.stars;
+          votes.stars = message.currentTrack.starUris;
           for (let i = 0; i < message.currentTrack.starUris.length; i++) {
-            if (!votes.stars.includes(message.currentTrack.starUris[i])) {
+            if (!currentStars.includes(message.currentTrack.starUris[i])) {
               events.emit("newVote", {
                 user: getUserObjFromUri(message.currentTrack.starUris[i]),
                 type: "star",
@@ -86,7 +90,6 @@ function handleMessage(type, message) {
               });
             }
           }
-          votes.stars = message.currentTrack.starUris;
         }
       }
       if (message.users) {
@@ -167,9 +170,17 @@ function joinRoom(theroomid, theuser) {
   if (connected) {
     started = true;
     emitToSocket("join", joinBody);
+    fetchRoom();
   }
 };
 
+
+function fetchRoom(){
+  var body = {
+    roomId: roomid
+  };
+  emitToSocket("fetchRoom", body);
+};
 /*
 CHAT FUNCTIONS
 */
@@ -245,6 +256,11 @@ function voteRatio(predict){
   var ratio = (up - down) / listeners;
   if (predict) ratio = (up - (down + 1)) / listeners;
   return ratio;
+};
+
+function downStars(){
+  var downstars = votes.downvotes.filter(element => votes.stars.includes(element));
+  return downstars.length;
 };
 
 /*
@@ -392,6 +408,7 @@ module.exports = {
   stepDown,
   removeDJ,
   voteRatio,
+  downStars,
   getFirst,
   getUser,
   getRole,
