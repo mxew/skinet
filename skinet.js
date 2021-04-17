@@ -74,6 +74,7 @@ const plLoad = function(url){
             shuffleArray(tracks);
             bot.playlist = bot.playlist.concat(tracks);
             console.log(bot.playlist.length + "tracks loaded.");
+            if (!bot.djs.length) jqbx.stepUp();
           }
         }
       if (list.next) plLoad(list.next);
@@ -82,10 +83,6 @@ const plLoad = function(url){
       console.log(err);
     });
 };
-
-imgur.setClientId(process.env.IMGUR_ID);
-imgur.setAPIUrl('https://api.imgur.com/3/');
-imgur.setMashapeKey('https://imgur-apiv3.p.mashape.com/');
 
 // Matt's jqbx.fm leaderboard data htts://thompsn.com/jqbx/leaderboard
 var configs = {
@@ -133,7 +130,7 @@ firebase.app("bot").auth().onAuthStateChanged(function(user) {
 jqbx.events.on("newSong", function(message) {
   bot.song = message;
   bot.voted = false;
-
+  bot.coinIssued = false;
   console.log(moment(Date.now()).format("HH:mm") + " " + message.username + " is playing " + message.artists[0].name + " - " + message.name);
   // VERY IMPORTANT HORN INTRO TRACKING:
   if (message.artists[0].name == "Modest Mouse" && message.name == "Horn Intro") {
@@ -180,9 +177,30 @@ jqbx.events.on("usersChanged", function(users) {
 });
 
 jqbx.events.on("newVote", function(data) {
+  //console.log("DOWNSTARS: "+jqbx.downStars());
+  if (!bot.coinIssued){
+    if (jqbx.downStars() > 4){
+      // issue mrdrcoin
+      bot.coinIssued = true;
+      var coinRef = firebase.app("bot").database().ref("bank/"+bot.song.userUri);
+      coinRef.once("value")
+        .then(function(snap) {
+          var data = snap.val();
+          var bal = 1
+          if (data) {
+            bal = data.bal + 1;
+          }
+          coinRef.set({
+            bal: bal,
+            name: bot.song.username
+          });
+          jqbx.sendMessage(bot.song.username + " has been issued 1 mrdrcoin and now has a total of "+bal+".");
+        });
+    }
+  }
   if (bot.song.userUri !== data.user.uri) bot.lastActive[data.user.uri] = Date.now();
   var skipCheck = jqbx.voteRatio(true);
-  if ((skipCheck <= -0.25 && !bot.voted) && (bot.users.length >= 5)) {
+  if ((skipCheck < -0.25 && !bot.voted) && (bot.users.length >= 5)) {
     jqbx.sendChat("https://media.giphy.com/media/3ohze1LSWrEGCML02Y/giphy.gif");
     jqbx.upvote();
     bot.voted = true;
@@ -191,6 +209,10 @@ jqbx.events.on("newVote", function(data) {
 
 jqbx.events.on("djsChanged", function(data) {
   bot.djs = data;
+  // console.log("DJS CHANGED:" +bot.djs.length);
+  if (!bot.djs.length && bot.playlist.length){
+    jqbx.stepUp();
+  }
 });
 
 jqbx.events.on("newDJ", function(data) {

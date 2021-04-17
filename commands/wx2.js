@@ -229,14 +229,34 @@ exports.handler = function(data, args) {
                         } catch (e) {
                           img = canvas.toDataURL().split(',')[1];
                         }
-                        imgur.uploadBase64(img)
-                          .then(function(json) {
-                            jqbx.sendChat(json.data.link);
-                          })
-                          .catch(function(err) {
-                            console.error(err.message);
-                            jqbx.sendChat("imgur upload error...");
-                          });
+
+                        // BEGIN IMGUR UPLOAD
+                        var data4 = {
+                          image: img,
+                          type: 'base64'
+                        };
+                        request({
+                          headers: {
+                            'Authorization': 'Client-ID ' + process.env.IMGUR_ID,
+                            "content-type": 'application/json',
+                          },
+                          uri: 'https://api.imgur.com/3/image',
+                          body: data4,
+                          json: true,
+                          method: 'POST'
+                        }, function(err, res, body) {
+                          if (!error && response.statusCode == 200) {
+                            if (body) {
+                              if (body.data) {
+                                jqbx.sendChat('https://i.imgur.com/' + body.data.id + '.png');
+                              }
+                            }
+                          } else {
+                            console.log(error);
+                            jqbx.sendChat('imgur upload error');
+                          }
+                        });
+
                       };
                       picboy4.onerror = err => {
                         throw err

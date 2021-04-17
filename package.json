@@ -13,7 +13,6 @@
     "canvas": "2.6.1",
     "dotenv": "^8.2.0",
     "firebase": "^8.4.1",
-    "imgur": "^1.0.0",
     "moment": "^2.25.3",
     "moment-timezone": "^0.5.28",
     "node-spotify-api": "^1.1.1",

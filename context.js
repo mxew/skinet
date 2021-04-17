@@ -10,7 +10,6 @@ module.exports = function() {
   firebase = require('firebase');
   Spotify = require('node-spotify-api');
   striptags = require('striptags');
-  imgur = require('imgur');
   spotify = new Spotify({
     id: process.env.SPOTIFY_ID,
     secret: process.env.SPOTIFY_SECRET
