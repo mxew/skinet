@@ -53,7 +53,7 @@ const reduceTrack = (track) => ({
   uri: track.uri,
 });
 
-const plLoad = function(url){
+const plLoad = function(url) {
   if (!url) url = "https://api.spotify.com/v1/playlists/" + process.env.SPOTIFY_PLAYLIST + "/tracks?offset=0&limit=100&market=US"
   spotify
     .request(url)
@@ -64,19 +64,18 @@ const plLoad = function(url){
           [array[i], array[j]] = [array[j], array[i]];
         }
       }
-        if (list.items) {
-          if (list.items.length) {
-            var tracks = [];
-            for (let i = 0; i < list.items.length; i++) {
-              tracks.push(list.items[i].track);
-            }
-            tracks = tracks.map(reduceTrack);
-            shuffleArray(tracks);
-            bot.playlist = bot.playlist.concat(tracks);
-            console.log(bot.playlist.length + "tracks loaded.");
-            if (!bot.djs.length) jqbx.stepUp();
+      if (list.items) {
+        if (list.items.length) {
+          var tracks = [];
+          for (let i = 0; i < list.items.length; i++) {
+            tracks.push(list.items[i].track);
           }
+          tracks = tracks.map(reduceTrack);
+          shuffleArray(tracks);
+          bot.playlist = bot.playlist.concat(tracks);
+          console.log(bot.playlist.length + "tracks loaded.");
         }
+      }
       if (list.next) plLoad(list.next);
     })
     .catch(function(err) {
@@ -158,7 +157,7 @@ jqbx.events.on("usersChanged", function(users) {
   var countries = [];
   for (var i = 0; i < users.length; i++) {
     ppl.push(users[i]._id);
-    if (!countries.includes(users[i].country)){
+    if (!countries.includes(users[i].country)) {
       countries.push(users[i].country);
     }
     if (!bot.lastActive[users[i].uri]) bot.lastActive[users[i].uri] = Date.now();
@@ -178,11 +177,11 @@ jqbx.events.on("usersChanged", function(users) {
 
 jqbx.events.on("newVote", function(data) {
   //console.log("DOWNSTARS: "+jqbx.downStars());
-  if (!bot.coinIssued){
-    if (jqbx.downStars() > 4){
+  if (!bot.coinIssued) {
+    if (jqbx.downStars() > 4) {
       // issue mrdrcoin
       bot.coinIssued = true;
-      var coinRef = firebase.app("bot").database().ref("bank/"+bot.song.userUri);
+      var coinRef = firebase.app("bot").database().ref("bank/" + bot.song.userUri);
       coinRef.once("value")
         .then(function(snap) {
           var data = snap.val();
@@ -194,7 +193,7 @@ jqbx.events.on("newVote", function(data) {
             bal: bal,
             name: bot.song.username
           });
-          jqbx.sendMessage(bot.song.username + " has been issued 1 mrdrcoin and now has a total of "+bal+".");
+          jqbx.sendMessage(bot.song.username + " has been issued 1 mrdrcoin and now has a total of " + bal + ".");
         });
     }
   }
@@ -210,9 +209,6 @@ jqbx.events.on("newVote", function(data) {
 jqbx.events.on("djsChanged", function(data) {
   bot.djs = data;
   // console.log("DJS CHANGED:" +bot.djs.length);
-  if (!bot.djs.length && bot.playlist.length){
-    jqbx.stepUp();
-  }
 });
 
 jqbx.events.on("newDJ", function(data) {
@@ -260,7 +256,7 @@ jqbx.events.on("newChat", function(message) {
     if (thecommand) {
       // run command
       thecommand.handler(commandData, args);
-    } else if (uri !== bot.user.uri){
+    } else if (uri !== bot.user.uri) {
       // check db for single string triggers
       var trigger = firebase.app("bot").database().ref("triggers/" + command);
       trigger.once("value")
@@ -283,7 +279,7 @@ function afkCheck() {
         console.log("AFK CHECK: " + bot.djs[i].uri + ": " + timeSince);
         if (timeSince >= bot.afkLimit) {
           if (bot.warned[bot.djs[i].uri]) {
-            if (bot.song.userUri == bot.djs[i].uri){
+            if (bot.song.userUri == bot.djs[i].uri) {
               // this person is current dj ... wait for now
             } else {
               jqbx.removeDJ(bot.djs[i].uri);
