@@ -250,7 +250,7 @@ function star() {
 };
 
 function voteRatio(predict){
-  var up = votes.upvotes.length;
+  var up = votes.upvotes.length - 1;
   var down = votes.downvotes.length;
   var listeners = users.length;
   var ratio = (up - down) / listeners;

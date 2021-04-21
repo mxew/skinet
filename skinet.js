@@ -199,7 +199,7 @@ jqbx.events.on("newVote", function(data) {
   }
   if (bot.song.userUri !== data.user.uri) bot.lastActive[data.user.uri] = Date.now();
   var skipCheck = jqbx.voteRatio(true);
-  if ((skipCheck < -0.25 && !bot.voted) && (bot.users.length >= 5)) {
+  if ((skipCheck <= -0.25 && !bot.voted) && (bot.users.length >= 5)) {
     jqbx.sendChat("https://media.giphy.com/media/3ohze1LSWrEGCML02Y/giphy.gif");
     jqbx.upvote();
     bot.voted = true;
@@ -272,30 +272,34 @@ jqbx.events.on("newChat", function(message) {
 });
 
 function afkCheck() {
-  for (let i = 0; i < bot.djs.length; i++) {
-    if (bot.djs[i].uri !== bot.user.uri) {
-      if (bot.lastActive[bot.djs[i].uri]) {
-        var timeSince = Math.floor((Date.now() - bot.lastActive[bot.djs[i].uri]) / 1000 / 60);
-        console.log("AFK CHECK: " + bot.djs[i].uri + ": " + timeSince);
-        if (timeSince >= bot.afkLimit) {
-          if (bot.warned[bot.djs[i].uri]) {
-            if (bot.song.userUri == bot.djs[i].uri) {
-              // this person is current dj ... wait for now
+  if (!bot.users.includes(bot.user.uri)) {
+    console.log("BOT APPEARS TO NOT BE HERE?");
+  } else {
+    for (let i = 0; i < bot.djs.length; i++) {
+      if (bot.djs[i].uri !== bot.user.uri) {
+        if (bot.lastActive[bot.djs[i].uri]) {
+          var timeSince = Math.floor((Date.now() - bot.lastActive[bot.djs[i].uri]) / 1000 / 60);
+          console.log("AFK CHECK: " + bot.djs[i].uri + ": " + timeSince);
+          if (timeSince >= bot.afkLimit) {
+            if (bot.warned[bot.djs[i].uri]) {
+              if (bot.song.userUri == bot.djs[i].uri) {
+                // this person is current dj ... wait for now
+              } else {
+                jqbx.removeDJ(bot.djs[i].uri);
+                bot.warned[bot.djs[i].uri] = false;
+              }
             } else {
-              jqbx.removeDJ(bot.djs[i].uri);
-              bot.warned[bot.djs[i].uri] = false;
+              // warn DJ
+              var nameToUse = bot.djs[i].id;
+              if (bot.djs[i].username) nameToUse = bot.djs[i].username;
+              jqbx.sendChat("@" + nameToUse + " you have been afk for " + timeSince + " minutes. Engage now or prepare to be destroyed.");
+              bot.warned[bot.djs[i].uri] = true;
             }
-          } else {
-            // warn DJ
-            var nameToUse = bot.djs[i].id;
-            if (bot.djs[i].username) nameToUse = bot.djs[i].username;
-            jqbx.sendChat("@" + nameToUse + " you have been afk for " + timeSince + " minutes. Engage now or prepare to be destroyed.");
-            bot.warned[bot.djs[i].uri] = true;
           }
+        } else {
+          console.log("AFK CHECK: new DJ detected: " + bot.djs[i].uri)
+          bot.lastActive[bot.djs[i].uri] = Date.now();
         }
-      } else {
-        console.log("AFK CHECK: new DJ detected: " + bot.djs[i].uri)
-        bot.lastActive[bot.djs[i].uri] = Date.now();
       }
     }
   }
