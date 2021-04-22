@@ -28,6 +28,13 @@ try {
 bot.init = function() {
   jqbx.joinRoom(bot.roomid, bot.user);
 
+  jqbx.getRoom(bot.roomid, function(formatted){
+    if (formatted){
+      bot.roomName = formatted.title;
+      bot.roomSlug = formatted._id;
+      if (formatted.handle) bot.roomSlug = formatted.handle;
+    }
+  });
   // init afk check
   bot.afkTimer = setInterval(function() {
     if (bot.afkLimit) afkCheck();

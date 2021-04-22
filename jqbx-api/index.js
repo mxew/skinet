@@ -129,7 +129,11 @@ function handleMessage(type, message) {
       console.log(e);
     }
   } else if (type == "push-message") {
-    events.emit("newChat", message);
+    if (message.user){
+      events.emit("newChat", message);
+    } else {
+      events.emit("newMessage", message);
+    }
   } else if (type == "request-next-track"){
     events.emit("trackRequested", true);
   }
@@ -185,7 +189,7 @@ function fetchRoom(){
 CHAT FUNCTIONS
 */
 
-function sendChat(txt, expandable) {
+function sendChat(txt, expandable, interRoomData) {
   var chatBody = {
     roomId: roomid,
     user: user,
@@ -206,10 +210,15 @@ function sendChat(txt, expandable) {
     chatBody.message.html = txt;
     chatBody.message.text = txt;
   }
+  if (interRoomData){
+    chatBody.message.user.display_name = interRoomData.sendAsName;
+    chatBody.message.user.username = interRoomData.sendAsName;
+    chatBody.roomId = interRoomData.sendTo;
+  }
   emitToSocket("chat", chatBody);
 };
 
-function sendMessage(txt) {
+function sendMessage(txt, interRoomData) {
   var chatBody = {
     roomId: roomid,
     user: user,
@@ -218,7 +227,8 @@ function sendMessage(txt) {
       selectingEmoji: false
     }
   };
-  emitToSocket("chat", chatBody)
+  if (interRoomData) chatBody.roomId = interRoomData.sendTo;
+  emitToSocket("chat", chatBody);
 };
 
 /*
@@ -329,6 +339,12 @@ function getUser(uri, callback) {
   });
 };
 
+function getRoom(room, callback) {
+  apiRequest("/room/" + room, function(data) {
+    callback(data);
+  });
+};
+
 function getRole(uri) {
   var role = 0;
   if (mods.includes(uri)) role = 1;
@@ -411,6 +427,7 @@ module.exports = {
   downStars,
   getFirst,
   getUser,
+  getRoom,
   getRole,
   events
 };
