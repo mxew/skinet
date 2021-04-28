@@ -1,6 +1,6 @@
 // mrdrcoin command
 
-exports.names = ['mrdrcoin'];
+exports.names = ['mrdrcoin', 'mc'];
 exports.handler = function(data, args) {
   var coinRef = firebase.app("bot").database().ref("bank").orderByChild("bal").limitToLast(10);
   coinRef.once("value")

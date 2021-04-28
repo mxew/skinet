@@ -32,7 +32,7 @@ const getConditionFillColor = (temperature, units) => {
   return color;
 };
 
-exports.names = ['wx2', 'weather2'];
+exports.names = ['wx','weather','wx2', 'weather2'];
 exports.handler = function(data, args) {
   if (!args) args = "ames";
   if (args) {

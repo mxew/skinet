@@ -260,7 +260,7 @@ jqbx.events.on("newChat", function(message) {
       return found;
     })[0];
 
-    if (thecommand) {
+    if (thecommand && uri !== bot.user.uri) {
       // run command
       thecommand.handler(commandData, args);
     } else if (uri !== bot.user.uri) {
