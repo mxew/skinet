@@ -60,6 +60,11 @@ const reduceTrack = (track) => ({
   uri: track.uri,
 });
 
+bot.treatUserUri = function(uri){
+  let newUri = uri.replace(".", "--");
+  return newUri;
+};
+
 const plLoad = function(url) {
   if (!url) url = "https://api.spotify.com/v1/playlists/" + process.env.SPOTIFY_PLAYLIST + "/tracks?offset=0&limit=100&market=US"
   spotify
@@ -188,7 +193,7 @@ jqbx.events.on("newVote", function(data) {
     if (jqbx.downStars() > 4) {
       // issue mrdrcoin
       bot.coinIssued = true;
-      var coinRef = firebase.app("bot").database().ref("bank/" + bot.song.userUri);
+      var coinRef = firebase.app("bot").database().ref("bank/" + bot.treatUserUri(bot.song.userUri));
       coinRef.once("value")
         .then(function(snap) {
           var data = snap.val();
@@ -279,7 +284,7 @@ jqbx.events.on("newChat", function(message) {
 });
 
 function afkCheck() {
-  if (!bot.users.includes(bot.user.uri)) {
+  if (!bot.users.includes(bot.user._id)) {
     console.log("BOT APPEARS TO NOT BE HERE?");
   } else {
     for (let i = 0; i < bot.djs.length; i++) {

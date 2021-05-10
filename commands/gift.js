@@ -14,7 +14,7 @@ exports.handler = function(data, args) {
   } else if (giftAmount <= 0){
     jqbx.sendChat("that's a terrible gift");
   } else {
-    var coinRef = firebase.app("bot").database().ref("bank/" + data.uri);
+    var coinRef = firebase.app("bot").database().ref("bank/" + bot.treatUserUri(data.uri));
     coinRef.once("value")
       .then(function(snap) {
         var info = snap.val();
@@ -30,7 +30,7 @@ exports.handler = function(data, args) {
             bal: balAfter
           });
 
-          var coinRef2 = firebase.app("bot").database().ref("bank/" + bot.song.userUri);
+          var coinRef2 = firebase.app("bot").database().ref("bank/" + bot.treatUserUri(bot.song.userUri));
           coinRef2.once("value")
             .then(function(snap2) {
               var info2 = snap2.val();
