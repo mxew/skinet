@@ -254,6 +254,7 @@ jqbx.events.on("newChat", function(message) {
   if (matches) {
     var command = matches[1].toLowerCase();
     var args = matches[2];
+    if (args) args = args.trim();
 
     var thecommand = bot.commands.filter(function(cmd) {
       var found = false;
