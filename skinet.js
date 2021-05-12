@@ -248,6 +248,12 @@ jqbx.events.on("newChat", function(message) {
     txt: txt
   };
   bot.lastActive[uri] = Date.now();
+
+  var isHere = jqbx.getUserObjFromUri(uri);
+  if (isHere){
+    if (isHere.device == "bot") isHere = false;
+  }
+
   console.log(moment(Date.now()).format("HH:mm") + " " + name + ": " + txt);
 
   var matches = txt.match(/^(?:[/])(\w+)\s*(.*)/i);
@@ -266,10 +272,10 @@ jqbx.events.on("newChat", function(message) {
       return found;
     })[0];
 
-    if (thecommand && uri !== bot.user.uri) {
+    if (thecommand && uri !== bot.user.uri && isHere) {
       // run command
       thecommand.handler(commandData, args);
-    } else if (uri !== bot.user.uri) {
+    } else if (uri !== bot.user.uri && isHere) {
       // check db for single string triggers
       var trigger = firebase.app("bot").database().ref("triggers/" + command);
       trigger.once("value")

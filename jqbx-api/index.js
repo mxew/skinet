@@ -352,10 +352,6 @@ function getRole(uri) {
   return role;
 };
 
-/*
-INTERNAL HELPERS
-*/
-
 function getUserObjFromUri(uri) {
   var result = false;
   for (let i = 0; i < users.length; i++) {
@@ -427,6 +423,7 @@ module.exports = {
   downStars,
   getFirst,
   getUser,
+  getUserObjFromUri,
   getRoom,
   getRole,
   events
