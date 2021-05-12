@@ -20,7 +20,7 @@ exports.handler = function(data, args) {
             withOther = " along with " + thismany + " other tracks";
           }
           var releaseDate = new Date(song.album.release_date);
-          jqbx.sendChat(song.name + " was released to Spotify on the album " + song.album.name + "" + withOther + " on " + moment(releaseDate).format("MMMM Do YYYY"));
+          jqbx.sendChat(song.name + " was released on the album " + song.album.name + "" + withOther + " on " + moment(releaseDate).format("MMMM Do YYYY"));
         } else {
           jqbx.sendChat(name + ", what song is that?");
         }
