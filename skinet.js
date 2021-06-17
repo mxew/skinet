@@ -37,7 +37,7 @@ bot.init = function() {
   });
   // init afk check
   bot.afkTimer = setInterval(function() {
-    if (bot.afkLimit) afkCheck();
+    if (bot.afkLimit && !process.env.GUEST_BOT) afkCheck();
   }, 3 * 60000);
 
   // load bot's playlist
