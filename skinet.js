@@ -256,7 +256,7 @@ jqbx.events.on("newChat", function(message) {
 
   console.log(moment(Date.now()).format("HH:mm") + " " + name + ": " + txt);
 
-  var matches = txt.match(/^(?:[/])(\w+)\s*(.*)/i);
+  var matches = txt.match(/^(?:[!*./])(\w+)\s*(.*)/i);
   if (matches) {
     var command = matches[1].toLowerCase();
     var args = matches[2];
