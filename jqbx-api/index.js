@@ -345,6 +345,12 @@ function getRoom(room, callback) {
   });
 };
 
+function getActiveRooms(callback) {
+  apiRequest("/active-rooms/0", function(data) {
+    callback(data);
+  });
+};
+
 function getRole(uri) {
   var role = 0;
   if (mods.includes(uri)) role = 1;
@@ -425,6 +431,7 @@ module.exports = {
   getUser,
   getUserObjFromUri,
   getRoom,
+  getActiveRooms,
   getRole,
   events
 };

@@ -41,9 +41,21 @@ exports.handler = function(data, args) {
         }
       });
     } else {
-      jqbx.sendChat("To use the walkie talkie, type /hay room-id (the part after app.jqbx.fm/join/ in their url) followed by some sort of message.");
+      jqbx.sendChat("To use the walkie talkie, type /hay room-id (the part after app.jqbx.fm/join/ in their url) followed by your message.");
     }
   } else {
-    jqbx.sendChat("To use the walkie talkie, type /hay room-id some sort of message.");
+    jqbx.getActiveRooms(function(formatted) {
+      if (formatted) {
+        var resp = "These rooms can receive walkie talkie messages right now:<br>";
+        for (let i = 0; i < formatted.rooms.length; i++) {
+          var hasBot = false;
+          for (let e = 0; e < formatted.rooms[i].users.length; e++) {
+            if (formatted.rooms[i].users[e].device == "bot") hasBot = true;
+          }
+          if (hasBot) resp += "/hay "+ formatted.rooms[i].handle + " | " + formatted.rooms[i].title + " | " + formatted.rooms[i].users.length + " online<br>";
+        }
+        jqbx.sendChat(resp, true);
+      }
+    });
   }
 };
