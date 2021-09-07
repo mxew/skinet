@@ -28,8 +28,8 @@ try {
 bot.init = function() {
   jqbx.joinRoom(bot.roomid, bot.user);
 
-  jqbx.getRoom(bot.roomid, function(formatted){
-    if (formatted){
+  jqbx.getRoom(bot.roomid, function(formatted) {
+    if (formatted) {
       bot.roomName = formatted.title;
       bot.roomSlug = formatted._id;
       if (formatted.handle) bot.roomSlug = formatted.handle;
@@ -60,7 +60,7 @@ const reduceTrack = (track) => ({
   uri: track.uri,
 });
 
-bot.treatUserUri = function(uri){
+bot.treatUserUri = function(uri) {
   let newUri = uri.replace(".", "--");
   return newUri;
 };
@@ -146,11 +146,15 @@ jqbx.events.on("newSong", function(message) {
   // VERY IMPORTANT HORN INTRO TRACKING:
   if (message.artists[0].name == "Modest Mouse" && message.name == "Horn Intro") {
     bot.hornchain++;
-    var hornstring = "";
-    for (var i = 0; i < bot.hornchain; i++) {
-      hornstring += ":trumpet:";
+    if (bot.hornchain <= 10) {
+      var hornstring = "";
+      for (var i = 0; i < bot.hornchain; i++) {
+        hornstring += ":trumpet:";
+      }
+      jqbx.sendChat(hornstring);
+    } else {
+      jqbx.sendChat(":trumpet: x" + bot.hornchain);
     }
-    jqbx.sendChat(hornstring);
   } else {
     if (bot.hornchain > 0) {
       jqbx.sendChat(":x: hey great work " + message.username + ". Chain was " + bot.hornchain);
@@ -250,7 +254,7 @@ jqbx.events.on("newChat", function(message) {
   bot.lastActive[uri] = Date.now();
 
   var isHere = jqbx.getUserObjFromUri(uri);
-  if (isHere){
+  if (isHere) {
     if (isHere.device == "bot") isHere = false;
   }
 

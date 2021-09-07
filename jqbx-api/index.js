@@ -351,6 +351,13 @@ function getActiveRooms(callback) {
   });
 };
 
+function getAllRooms(callback) {
+  //TODO: flip through pages until we get to rooms with less than 2 people in them
+  apiRequest("/all-rooms/0", function(data) {
+    callback(data);
+  });
+};
+
 function getRole(uri) {
   var role = 0;
   if (mods.includes(uri)) role = 1;
@@ -432,6 +439,7 @@ module.exports = {
   getUserObjFromUri,
   getRoom,
   getActiveRooms,
+  getAllRooms,
   getRole,
   events
 };

@@ -44,7 +44,7 @@ exports.handler = function(data, args) {
       jqbx.sendChat("To use the walkie talkie, type /hay room-id (the part after app.jqbx.fm/join/ in their url) followed by your message.");
     }
   } else {
-    jqbx.getActiveRooms(function(formatted) {
+    jqbx.getAllRooms(function(formatted) {
       if (formatted) {
         var resp = "These rooms can receive walkie talkie messages right now:<br>";
         for (let i = 0; i < formatted.rooms.length; i++) {
