@@ -139,14 +139,14 @@ firebase.app("bot").auth().onAuthStateChanged(function(user) {
 });
 
 jqbx.events.on("newSong", function(message) {
-  if (lastfm.key) lastfm.scrobble();
+  if (process.env.LASTFM_SESSIONKEY) lastfm.scrobble();
   bot.song = message;
   bot.voted = false;
   bot.coinIssued = false;
   console.log(moment(Date.now()).format("HH:mm") + " " + message.username + " is playing " + message.artists[0].name + " - " + message.name);
   lastfm.duration = bot.song.duration_ms / 1000;
   lastfm.songStart = Math.floor((new Date()).getTime() / 1000);
-  if (lastfm.key) lastfm.nowPlaying();
+  if (process.env.LASTFM_SESSIONKEY) lastfm.nowPlaying();
   jqbx.getFirst("spotify:track:"+ bot.song.id, function(formatted) {
     if (!formatted){
       jqbx.sendChat(":first_place_medal: first (probably?)");
@@ -209,7 +209,7 @@ jqbx.events.on("newVote", function(data) {
     if (jqbx.downStars() > 4) {
       // issue mrdrcoin
       bot.coinIssued = true;
-      if (lastfm.key) lastfm.love();
+      if (process.env.LASTFM_SESSIONKEY) lastfm.love();
       var coinRef = firebase.app("bot").database().ref("bank/" + bot.treatUserUri(bot.song.userUri));
       coinRef.once("value")
         .then(function(snap) {
