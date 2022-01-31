@@ -34,7 +34,7 @@ var votes = {
 
 function emitToSocket(type, data) {
   try {
-    var message = "42["+JSON.stringify(type)+"," + JSON.stringify(data) + "]";
+    var message = "42[" + JSON.stringify(type) + "," + JSON.stringify(data) + "]";
     // console.log(message);
     ws.send(message);
   } catch (e) {
@@ -129,12 +129,12 @@ function handleMessage(type, message) {
       console.log(e);
     }
   } else if (type == "push-message") {
-    if (message.user){
+    if (message.user) {
       events.emit("newChat", message);
     } else {
       events.emit("newMessage", message);
     }
-  } else if (type == "request-next-track"){
+  } else if (type == "request-next-track") {
     events.emit("trackRequested", true);
   }
 };
@@ -143,10 +143,14 @@ function apiRequest(endpoint, callback) {
   request(apiUrl + endpoint, function cbfunc(error, response, body) {
     if (!error && response.statusCode == 200) {
       if (body) {
-        var formatted = JSON.parse(body);
-        if (formatted) {
-          callback(formatted);
-        } else {
+        try {
+          var formatted = JSON.parse(body);
+          if (formatted) {
+            callback(formatted);
+          } else {
+            callback(false);
+          }
+        } catch (e) {
           callback(false);
         }
       } else {
@@ -179,7 +183,7 @@ function joinRoom(theroomid, theuser) {
 };
 
 
-function fetchRoom(){
+function fetchRoom() {
   var body = {
     roomId: roomid
   };
@@ -210,7 +214,7 @@ function sendChat(txt, expandable, interRoomData) {
     chatBody.message.html = txt;
     chatBody.message.text = txt;
   }
-  if (interRoomData){
+  if (interRoomData) {
     chatBody.message.user.display_name = interRoomData.sendAsName;
     chatBody.message.user.username = interRoomData.sendAsName;
     chatBody.roomId = interRoomData.sendTo;
@@ -259,7 +263,7 @@ function star() {
   emitToSocket("starTrack", voteBody);
 };
 
-function voteRatio(predict){
+function voteRatio(predict) {
   var up = votes.upvotes.length - 1;
   var down = votes.downvotes.length;
   var listeners = users.length;
@@ -268,7 +272,7 @@ function voteRatio(predict){
   return ratio;
 };
 
-function downStars(){
+function downStars() {
   var downstars = votes.downvotes.filter(element => votes.stars.includes(element));
   return downstars.length;
 };
@@ -277,7 +281,7 @@ function downStars(){
 DJ FUNCTIONS
 */
 
-function stepUp(){
+function stepUp() {
   var body = {
     roomId: roomid,
     user: user
@@ -285,7 +289,7 @@ function stepUp(){
   emitToSocket("joinDjs", body);
 };
 
-function stepDown(){
+function stepDown() {
   var body = {
     roomId: roomid,
     user: user
@@ -293,7 +297,7 @@ function stepDown(){
   emitToSocket("leaveDjs", body);
 };
 
-function supplyTrack(trackObject){
+function supplyTrack(trackObject) {
   var body = {
     roomId: roomid,
     user: user,
@@ -392,9 +396,9 @@ ws.addEventListener('open', () => {
 
 ws.addEventListener('message', (data0) => {
   try {
-    if (data0.data.charAt(0) == "0"){
-      var startup = JSON.parse(data0.data.substring(1,data0.data.length));
-      console.log("sid is set to "+startup.sid);
+    if (data0.data.charAt(0) == "0") {
+      var startup = JSON.parse(data0.data.substring(1, data0.data.length));
+      console.log("sid is set to " + startup.sid);
       joinRoom(roomid, user);
       // sid = startup.sid;
       // if (user) user.socketId = sid;
@@ -403,7 +407,7 @@ ws.addEventListener('message', (data0) => {
     var code = data.substring(0, data.indexOf('['));
     if (code == "42") {
       var raw1 = data.substring(code.length + 1, data.length - 1);
-      if (raw1.indexOf(',') >= 0){
+      if (raw1.indexOf(',') >= 0) {
         var type = JSON.parse(raw1.substring(0, raw1.indexOf(',')));
         var message = JSON.parse(raw1.substring(type.length + 3, raw1.length));
         handleMessage(type, message);

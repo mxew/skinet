@@ -2,7 +2,17 @@
 
 exports.names = ['mrdrcoin', 'mc'];
 exports.handler = function(data, args) {
-  var coinRef = firebase.app("bot").database().ref("bank").orderByChild("bal").limitToLast(10);
+  var limit = 10;
+  if (args){
+    var num = parseInt(args);
+    console.log(num)
+    if (num){
+      if (num <= 100 & num > 0){
+        limit = num;
+      }
+    }
+  }
+  var coinRef = firebase.app("bot").database().ref("bank").orderByChild("bal").limitToLast(limit);
   coinRef.once("value")
     .then(function(snap) {
       var info = snap.val();
@@ -18,6 +28,8 @@ exports.handler = function(data, args) {
         rank--;
       });
       arry.reverse();
-      jqbx.sendChat(":bank: mrdrcoin TOP 10: " + arry.join(" | "));
+      var collapseOrNot = false;
+      if (limit > 15) collapseOrNot = true;
+      jqbx.sendChat(":bank: mrdrcoin TOP "+limit+": " + arry.join(" | "), collapseOrNot);
     });
 };
