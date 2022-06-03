@@ -311,7 +311,8 @@ function afkCheck() {
   if (!bot.users.includes(bot.user._id)) {
     console.log("BOT APPEARS TO NOT BE HERE?");
   } else {
-    for (let i = 0; i < bot.djs.length; i++) {
+    var numberDjs = bot.djs.length;
+    for (let i = 0; i < numberDjs; i++) {
       if (bot.djs[i].uri !== bot.user.uri) {
         if (bot.lastActive[bot.djs[i].uri]) {
           var timeSince = Math.floor((Date.now() - bot.lastActive[bot.djs[i].uri]) / 1000 / 60);
@@ -324,7 +325,7 @@ function afkCheck() {
                 jqbx.removeDJ(bot.djs[i].uri);
                 bot.warned[bot.djs[i].uri] = false;
               }
-            } else {
+            } else if (numberDjs > 1) {
               // warn DJ
               var nameToUse = bot.djs[i].id;
               if (bot.djs[i].username) nameToUse = bot.djs[i].username;
