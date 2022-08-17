@@ -9,7 +9,6 @@ exports.handler = function(data, args) {
         try {
           var formatted = JSON.parse(body);
           var response = "yes hello " + data.name + " is this your dog?: " + formatted[0].url;
-          if (formatted[0].breeds.length) response += " (" + formatted[0].breeds[0].name + ": " + formatted[0].breeds[0].temperament + ")";
           jqbx.sendChat(response);
         } catch (e) {
           console.log(e);
